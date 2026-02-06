@@ -615,14 +615,7 @@
 
     <script>
         const INVITE_CODE = "mahalle";
-        const API_URL = `https://discord.com/api/v9/invites/${INVITE_CODE}?with_counts=true`;
-        const PROXIES = [
-            { url: (api) => `https://api.allorigins.win/raw?url=${encodeURIComponent(api)}` },
-            { url: (api) => `https://corsproxy.io/?${encodeURIComponent(api)}` },
-            { url: (api) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(api)}` },
-            { url: (api) => `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(api)}` }
-        ];
-        
+
         const menuBtn = document.getElementById('menuBtn');
         const navLinks = document.getElementById('navLinks');
         menuBtn.onclick = () => {
@@ -652,10 +645,12 @@
             document.getElementById('guild-name').innerText = g.name;
             document.getElementById('online-count').innerText = data.approximate_presence_count ?? "50+";
             document.getElementById('total-count').innerText = data.approximate_member_count ?? "200+";
+
             const icon = data.guild 
                 ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith('a_') ? 'gif' : 'png'}?size=256`
                 : "https://mahalle.life/mahalle.png";
             document.getElementById('guild-icon').src = icon;
+
             if (g.banner) {
                 const banner = `https://cdn.discordapp.com/banners/${g.id}/${g.banner}.${g.banner.startsWith('a_') ? 'gif' : 'png'}?size=1024`;
                 document.getElementById('guild-banner').style.backgroundImage = `url('${banner}')`;
@@ -664,31 +659,20 @@
             }
         }
 
-        async function fetchWithProxy(proxyIndex = 0) {
-            if (proxyIndex >= PROXIES.length) {
-                console.error("Tüm proxy'ler başarısız.");
-                updateDiscordUI({}); 
-                return;
-            }
-            const proxy = PROXIES[proxyIndex];
-            const proxyUrl = proxy.url(API_URL);
+        async function fetchDiscord() {
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                const r = await fetch(proxyUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                if (!r.ok) throw new Error(`Proxy ${proxyIndex} yanıt vermedi: ${r.status}`);
+                const r = await fetch(`https://discord.com/api/v9/invites/${INVITE_CODE}?with_counts=true`, {
+                    cache: 'no-cache'
+                });
                 const data = await r.json();
                 if (data.guild) {
                     updateDiscordUI(data);
                     localStorage.setItem('discordData', JSON.stringify(data));
                     localStorage.setItem('discordDataTimestamp', Date.now());
-                } else {
-                    throw new Error("Geçersiz veri");
                 }
             } catch (e) {
-                console.error(`Proxy ${proxyIndex} hatası:`, e);
-                fetchWithProxy(proxyIndex + 1);
+                console.error("Discord API Hatası:", e);
+                updateDiscordUI({}); 
             }
         }
 
@@ -706,17 +690,20 @@
             return false;
         }
 
-        const isMobile = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+                      || window.innerWidth <= 768;
 
         if (isMobile) {
-            updateDiscordUI({});
+            document.getElementById('online-count').innerText = "50+";
+            document.getElementById('total-count').innerText = "200+";
+            document.getElementById('guild-icon').src = "https://mahalle.life/mahalle.png";
+            document.getElementById('guild-banner').style.backgroundImage = `url('https://mahalle.life/banner.png')`;
+            document.getElementById('guild-name').innerText = "Mahalle";
         } else {
             if (!loadCachedDiscordData()) {
-                fetchWithProxy();
+                fetchDiscord();
             }
-            setInterval(() => {
-                fetchWithProxy();
-            }, 10000);
+            setInterval(fetchDiscord, 10000);
         }
 
         const particlesContainer = document.getElementById('particles');
@@ -731,6 +718,6 @@
             p.style.animationDelay = `${Math.random() * 15}s`;
             particlesContainer.appendChild(p);
         }
-    </script>       
+    </script>
 </body>
 </html>
