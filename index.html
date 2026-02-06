@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Mahalle</title>
-
     <meta name="description" content="Topluluğun kalbi burada atıyor.">
     <meta property="og:site_name" content="mahalle.life">
     <meta name="theme-color" content="#5865f2">
@@ -16,13 +15,12 @@
     <link rel="icon" href="https://mahalle.life/favicon.ico" type="image/png" sizes="16x16"/>
     <link rel="icon" href="https://mahalle.life/favicon.ico" type="image/png" sizes="32x32"/>
     <meta name="keywords" content="mahalle, mahalle life, discord topluluk, dijital mahalle, sosyal topluluk">
-    
+   
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         :root {
-            --discord-dark: #313338;    
+            --discord-dark: #313338;
             --discord-darker: #2b2d31;
             --discord-black: #1e1f22;
             --discord-blue: #5865f2;
@@ -34,10 +32,8 @@
             --glass-bg: rgba(30, 31, 34, 0.92);
             --grid-color: rgba(88, 101, 242, 0.12);
         }
-
         * { scrollbar-width: none; -ms-overflow-style: none; box-sizing: border-box; margin: 0; padding: 0; }
         *::-webkit-scrollbar { display: none; }
-
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Montserrat', sans-serif;
@@ -46,7 +42,6 @@
             overflow-x: hidden;
             position: relative;
         }
-
         .particles {
             position: fixed;
             inset: 0;
@@ -56,19 +51,20 @@
         }
         .particle {
             position: absolute;
-            background: var(--discord-blue);
+            background: linear-gradient(135deg, #5865f2, #a06af9);
             border-radius: 50%;
-            opacity: 0.2;
-            box-shadow: 0 0 25px var(--discord-blue);
+            opacity: 0.35;
+            box-shadow: 0 0 30px #5865f2, 0 0 60px rgba(160,106,249,0.4);
             animation: float linear infinite;
+            filter: blur(1px);
         }
         @keyframes float {
-            0%   { transform: translateY(100vh) scale(0.4); opacity: 0; }
-            10%  { opacity: 0.5; }
-            90%  { opacity: 0.5; }
-            100% { transform: translateY(-20vh) scale(0.9); opacity: 0; }
+            0%   { transform: translateY(120vh) scale(0.3) translateX(-30vw); opacity: 0; }
+            10%  { opacity: 0.7; }
+            60%  { opacity: 0.9; }
+            90%  { opacity: 0.6; }
+            100% { transform: translateY(-30vh) scale(0.9) translateX(40vw); opacity: 0; }
         }
-
         header {
             display: flex;
             justify-content: space-between;
@@ -83,7 +79,6 @@
             z-index: 10000;
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
-
         .brand {
             font-weight: 900;
             font-size: 1.8rem;
@@ -91,7 +86,6 @@
             text-decoration: none;
         }
         .brand span { color: var(--discord-blue); }
-
         .nav-links {
             display: flex;
             align-items: center;
@@ -138,7 +132,6 @@
             transform: scaleX(1);
             transform-origin: left;
         }
-
         .menu-btn {
             display: none;
             width: 50px;
@@ -172,12 +165,11 @@
         .menu-btn.open .bar:nth-child(3) {
             transform: translateX(-50%) translateY(-9.5px) rotate(-45deg);
         }
-
         .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .welcome-text { 
-            font-weight: 900; 
-            font-size: clamp(3rem, 10vw, 6.5rem); 
-            margin-bottom: 60px; 
+        .welcome-text {
+            font-weight: 900;
+            font-size: clamp(3rem, 10vw, 6.5rem);
+            margin-bottom: 60px;
         }
         .animated-gradient {
             background: linear-gradient(270deg, #5865f2, #6974f0, #5865f2, #6974f0);
@@ -191,7 +183,6 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         .widget-card {
             width: 90%; max-width: 650px;
             background-color: var(--discord-black);
@@ -204,24 +195,19 @@
             background-size: cover; background-position: center;
         }
         .widget-body { padding: 75px 40px 40px; position: relative; text-align: left; }
-        
         .server-pp {
             width: 110px; height: 110px; border-radius: 32px;
             background-color: var(--discord-dark); border: 8px solid var(--discord-black);
             position: absolute; top: -55px; left: 35px; object-fit: cover;
         }
-        
         .server-info-row { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
         .server-titles h2 { font-size: 2rem; font-weight: 900; color: #fff; margin-bottom: 5px; }
         .server-titles p { color: var(--text-muted); font-size: 1rem; }
-
         .stats-group { display: flex; gap: 20px; }
         .stat-item { background: var(--discord-darker); padding: 12px 20px; border-radius: 12px; min-width: 120px; }
         .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 5px; }
         .stat-value { font-size: 1.2rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
-        
         .dot { width: 10px; height: 10px; border-radius: 50%; }
-
         .btn-join {
             display: block; width: 100%; background: var(--discord-green);
             color: #fff; text-decoration: none; text-align: center;
@@ -229,11 +215,10 @@
             font-size: 1rem; letter-spacing: 1px; transition: 0.3s;
         }
         .btn-join:hover { background: #1a8347; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(35, 165, 90, 0.2); }
-
-        section:not(.hero) { 
-            padding: 140px 8%; 
-            display: flex; 
-            justify-content: center; 
+        section:not(.hero) {
+            padding: 140px 8%;
+            display: flex;
+            justify-content: center;
         }
         .luxury-card {
             max-width: 1100px; width: 100%;
@@ -254,7 +239,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background-image: 
+            background-image:
                 linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
                 linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
             background-size: 32px 32px;
@@ -308,7 +293,6 @@
             color: var(--text-muted);
             font-size: 1.1rem;
         }
-
         footer {
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
@@ -349,7 +333,6 @@
             color: var(--discord-blue);
             font-size: 1.1rem;
         }
-
         .footer-bottom {
             max-width: 1200px;
             margin: 60px auto 0;
@@ -363,7 +346,6 @@
             gap: 20px;
             flex-wrap: wrap;
         }
-
         #backToTop {
             position: fixed;
             bottom: 30px;
@@ -385,7 +367,6 @@
         }
         #backToTop.show { opacity: 1; visibility: visible; }
         #backToTop:hover { transform: scale(1.1); }
-
         @media (max-width: 968px) {
             section:not(.hero) { padding: 100px 6%; }
             .luxury-card {
@@ -426,13 +407,12 @@
                 padding-bottom: 40px;
             }
             #backToTop {
-                bottom: 80px; 
+                bottom: 80px;
                 right: 20px;
                 width: 50px;
                 height: 50px;
             }
         }
-
         @media (max-width: 768px) {
             .menu-btn { display: flex; }
             .nav-links {
@@ -460,9 +440,7 @@
     </style>
 </head>
 <body>
-
     <div class="particles" id="particles"></div>
-
     <div id="backToTop"><i class="fa-solid fa-chevron-up"></i></div>
 
     <header>
@@ -585,7 +563,6 @@
                 discord.gg/mahalle
             </a>
         </div>
-
         <style>
             @keyframes shineText {
                 0% { background-position: 0% center; }
@@ -616,6 +593,73 @@
     <script>
         const INVITE_CODE = "mahalle";
 
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 8 + 3;
+            p.style.width = p.style.height = `${size}px`;
+            p.style.left = `${Math.random() * 100}vw`;
+            p.style.animationDuration = `${Math.random() * 40 + 35}s`;
+            p.style.animationDelay = `${Math.random() * 25}s`;
+            particlesContainer.appendChild(p);
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    const headerOffset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+
+                    history.replaceState(null, null, ' ');
+                }
+
+                menuBtn.classList.remove('open');
+                navLinks.classList.remove('open');
+                document.body.style.overflow = 'auto';
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+                e.preventDefault();
+                window.location.href = 'https://mahalle.life';
+            }
+            if (e.key === 'F12') {
+                e.preventDefault();
+                window.location.href = 'https://mahalle.life';
+            }
+        });
+
+        let devToolsOpen = false;
+        const threshold = 200;
+
+        function checkDevTools() {
+            const widthDiff = window.outerWidth - window.innerWidth;
+            const heightDiff = window.outerHeight - window.innerHeight;
+
+            if (widthDiff > threshold || heightDiff > threshold) {
+                if (!devToolsOpen) {
+                    devToolsOpen = true;
+                    window.location.href = 'https://mahalle.life';
+                }
+            } else {
+                devToolsOpen = false;
+            }
+        }
+
+        setInterval(checkDevTools, 500);
+
         const menuBtn = document.getElementById('menuBtn');
         const navLinks = document.getElementById('navLinks');
         menuBtn.onclick = () => {
@@ -645,12 +689,10 @@
             document.getElementById('guild-name').innerText = g.name;
             document.getElementById('online-count').innerText = data.approximate_presence_count ?? "50+";
             document.getElementById('total-count').innerText = data.approximate_member_count ?? "200+";
-
             const icon = data.guild 
                 ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith('a_') ? 'gif' : 'png'}?size=256`
                 : "https://mahalle.life/mahalle.png";
             document.getElementById('guild-icon').src = icon;
-
             if (g.banner) {
                 const banner = `https://cdn.discordapp.com/banners/${g.id}/${g.banner}.${g.banner.startsWith('a_') ? 'gif' : 'png'}?size=1024`;
                 document.getElementById('guild-banner').style.backgroundImage = `url('${banner}')`;
@@ -672,7 +714,7 @@
                 }
             } catch (e) {
                 console.error("Discord API Hatası:", e);
-                updateDiscordUI({}); 
+                updateDiscordUI({});
             }
         }
 
@@ -681,7 +723,7 @@
             const cachedTimestamp = localStorage.getItem('discordDataTimestamp');
             if (cachedData && cachedTimestamp) {
                 const age = Date.now() - parseInt(cachedTimestamp);
-                if (age < 10000) { 
+                if (age < 10000) {
                     const data = JSON.parse(cachedData);
                     updateDiscordUI(data);
                     return true;
@@ -704,19 +746,6 @@
                 fetchDiscord();
             }
             setInterval(fetchDiscord, 10000);
-        }
-
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 25; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            const size = Math.random() * 5 + 2;
-            p.style.width = `${size}px`;
-            p.style.height = `${size}px`;
-            p.style.left = `${Math.random() * 100}vw`;
-            p.style.animationDuration = `${Math.random() * 35 + 25}s`;
-            p.style.animationDelay = `${Math.random() * 15}s`;
-            particlesContainer.appendChild(p);
         }
     </script>
 </body>
