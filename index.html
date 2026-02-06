@@ -638,6 +638,23 @@
         document.addEventListener('touchstart', e => {
         }, { passive: false });
 
+        document.body.style.cursor = 'default';
+        document.body.style.userSelect = 'none';
+        document.body.style.MozUserSelect = 'none';
+        document.body.style.WebkitUserSelect = 'none';
+        document.body.style.msUserSelect = 'none';
+
+        const style = document.createElement('style');
+        style.textContent = `
+            * {
+                cursor: default !important;
+            }
+            a, button, .btn-join, [role="button"], input, textarea, select {
+                cursor: pointer !important;
+            }
+        `;
+        document.head.appendChild(style);
+
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
                 e.preventDefault();
