@@ -640,26 +640,50 @@
         };
         btt.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
 
+        function updateDiscordUI(data) {
+            const g = data.guild;
+            document.getElementById('guild-name').innerText = g.name;
+            document.getElementById('online-count').innerText = data.approximate_presence_count;
+            document.getElementById('total-count').innerText = data.approximate_member_count;
+            const icon = `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith('a_')?'gif':'png'}?size=256`;
+            document.getElementById('guild-icon').src = icon;
+            if (g.banner) {
+                const banner = `https://cdn.discordapp.com/banners/${g.id}/${g.banner}.${g.banner.startsWith('a_')?'gif':'png'}?size=1024`;
+                document.getElementById('guild-banner').style.backgroundImage = `url('${banner}')`;
+            }
+        }
+
         async function fetchDiscord() {
             try {
                 const r = await fetch(`https://discord.com/api/v9/invites/${INVITE_CODE}?with_counts=true`);
                 const data = await r.json();
                 if (data.guild) {
-                    const g = data.guild;
-                    document.getElementById('guild-name').innerText = g.name;
-                    document.getElementById('online-count').innerText = data.approximate_presence_count;
-                    document.getElementById('total-count').innerText = data.approximate_member_count;
-                    const icon = `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith('a_')?'gif':'png'}?size=256`;
-                    document.getElementById('guild-icon').src = icon;
-                    if (g.banner) {
-                        const banner = `https://cdn.discordapp.com/banners/${g.id}/${g.banner}.${g.banner.startsWith('a_')?'gif':'png'}?size=1024`;
-                        document.getElementById('guild-banner').style.backgroundImage = `url('${banner}')`;
-                    }
+                    updateDiscordUI(data);
+                    localStorage.setItem('discordData', JSON.stringify(data));
+                    localStorage.setItem('discordDataTimestamp', Date.now());
                 }
             } catch (e) { console.error("Discord API Hatası."); }
         }
-        fetchDiscord();
-        setInterval(fetchDiscord, 20000);
+
+        function loadCachedDiscordData() {
+            const cachedData = localStorage.getItem('discordData');
+            const cachedTimestamp = localStorage.getItem('discordDataTimestamp');
+            if (cachedData && cachedTimestamp) {
+                const age = Date.now() - parseInt(cachedTimestamp);
+                if (age < 10000) { 
+                    const data = JSON.parse(cachedData);
+                    updateDiscordUI(data);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if (!loadCachedDiscordData()) {
+            fetchDiscord();
+        }
+
+        setInterval(fetchDiscord, 10000);
 
         const particlesContainer = document.getElementById('particles');
         for (let i = 0; i < 25; i++) {
