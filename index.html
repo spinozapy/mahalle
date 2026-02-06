@@ -614,88 +614,121 @@
     </footer>
 
     <script>
-    const INVITE_CODE = "mahalle";
-
-
-    function updateDiscordUI(data) {
-        const g = data.guild || { name: "mahalle" }; 
-        document.getElementById('guild-name').innerText = g.name;
+        const INVITE_CODE = "mahalle";
+        const API_URL = `https://discord.com/api/v9/invites/${INVITE_CODE}?with_counts=true`;
+        const PROXIES = [
+            { url: (api) => `https://api.allorigins.win/raw?url=${encodeURIComponent(api)}` },
+            { url: (api) => `https://corsproxy.io/?${encodeURIComponent(api)}` },
+            { url: (api) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(api)}` },
+            { url: (api) => `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(api)}` }
+        ];
         
-        document.getElementById('online-count').innerText = data.approximate_presence_count ?? "50+";
-        document.getElementById('total-count').innerText = data.approximate_member_count ?? "200+";
-        
-        const icon = g.icon 
-            ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith('a_') ? 'gif' : 'png'}?size=256`
-            : "https://mahalle.life/mahallepp.png"; 
-        document.getElementById('guild-icon').src = icon;
-        
-        if (g.banner) {
-            const banner = `https://cdn.discordapp.com/banners/${g.id}/${g.banner}.${g.banner.startsWith('a_') ? 'gif' : 'png'}?size=1024`;
-            document.getElementById('guild-banner').style.backgroundImage = `url('${banner}')`;
-        } else {
-            document.getElementById('guild-banner').style.background = "linear-gradient(135deg, #5865f2, #313338)"; 
-        }
-    }
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+        menuBtn.onclick = () => {
+            menuBtn.classList.toggle('open');
+            navLinks.classList.toggle('open');
+            document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : 'auto';
+        };
 
-    async function fetchDiscord() {
-        try {
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://discord.com/api/v9/invites/${INVITE_CODE}?with_counts=true`)}`;
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000); 
-            
-            const r = await fetch(proxyUrl, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            
-            if (!r.ok) throw new Error("Proxy yanıt vermedi");
-            
-            const data = await r.json();
-            
-            if (data.guild) {
-                updateDiscordUI(data);
-                localStorage.setItem('discordData', JSON.stringify(data));
-                localStorage.setItem('discordDataTimestamp', Date.now());
+        document.querySelectorAll('.nav-links a').forEach(a => {
+            a.onclick = () => {
+                menuBtn.classList.remove('open');
+                navLinks.classList.remove('open');
+                document.body.style.overflow = 'auto';
+            };
+        });
+
+        const btt = document.getElementById('backToTop');
+        window.onscroll = () => {
+            const footer = document.getElementById('mainFooter');
+            if (footer.getBoundingClientRect().top < window.innerHeight) btt.classList.add('show');
+            else btt.classList.remove('show');
+        };
+        btt.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+
+        function updateDiscordUI(data) {
+            const g = data.guild || { 
+                name: "mahalle", 
+                id: "1421929836066115676", 
+                icon: "27e930fe108ebf73c47b0c2f22118fdf", 
+                banner: "eaa1078fe068f8d2f62c86856d8ddc3f" 
+            };
+            document.getElementById('guild-name').innerText = g.name;
+            document.getElementById('online-count').innerText = data.approximate_presence_count ?? 37;
+            document.getElementById('total-count').innerText = data.approximate_member_count ?? 206;
+            const iconExt = g.icon.startsWith('a_') ? 'gif' : 'png';
+            const icon = `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${iconExt}?size=256`;
+            document.getElementById('guild-icon').src = icon || "https://mahalle.life/mahallepp.png";
+            if (g.banner) {
+                const bannerExt = g.banner.startsWith('a_') ? 'gif' : 'png';
+                const banner = `https://cdn.discordapp.com/banners/${g.id}/${g.banner}.${bannerExt}?size=1024`;
+                document.getElementById('guild-banner').style.backgroundImage = `url('${banner}')`;
             } else {
+                document.getElementById('guild-banner').style.background = "linear-gradient(135deg, #5865f2, #313338)";
+            }
+        }
+
+        async function fetchWithProxy(proxyIndex = 0) {
+            if (proxyIndex >= PROXIES.length) {
+                console.error("Tüm proxy'ler başarısız.");
                 updateDiscordUI({}); 
+                return;
             }
-        } catch (e) {
-            console.error("Discord API / Proxy Hatası:", e);
-            updateDiscordUI({});
-        }
-    }
-
-    function loadCachedDiscordData() {
-        const cachedData = localStorage.getItem('discordData');
-        const cachedTimestamp = localStorage.getItem('discordDataTimestamp');
-        if (cachedData && cachedTimestamp) {
-            const age = Date.now() - parseInt(cachedTimestamp);
-            if (age < 30000) { 
-                const data = JSON.parse(cachedData);
-                updateDiscordUI(data);
-                return true;
+            const proxy = PROXIES[proxyIndex];
+            const proxyUrl = proxy.url(API_URL);
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                const r = await fetch(proxyUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!r.ok) throw new Error(`Proxy ${proxyIndex} yanıt vermedi: ${r.status}`);
+                const data = await r.json();
+                if (data.guild) {
+                    updateDiscordUI(data);
+                    localStorage.setItem('discordData', JSON.stringify(data));
+                    localStorage.setItem('discordDataTimestamp', Date.now());
+                } else {
+                    throw new Error("Geçersiz veri");
+                }
+            } catch (e) {
+                console.error(`Proxy ${proxyIndex} hatası:`, e);
+                fetchWithProxy(proxyIndex + 1); 
             }
         }
-        return false;
-    }
 
-    if (!loadCachedDiscordData()) {
-        fetchDiscord();
-    }
+        function loadCachedDiscordData() {
+            const cachedData = localStorage.getItem('discordData');
+            const cachedTimestamp = localStorage.getItem('discordDataTimestamp');
+            if (cachedData && cachedTimestamp) {
+                const age = Date.now() - parseInt(cachedTimestamp);
+                if (age < 60000) { 
+                    const data = JSON.parse(cachedData);
+                    updateDiscordUI(data);
+                    return true;
+                }
+            }
+            return false;
+        }
 
-    setInterval(fetchDiscord, 15000);
+        if (!loadCachedDiscordData()) {
+            fetchWithProxy();
+        }
 
-    const particlesContainer = document.getElementById('particles');
-    for (let i = 0; i < 25; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = Math.random() * 5 + 2;
-        p.style.width = `${size}px`;
-        p.style.height = `${size}px`;
-        p.style.left = `${Math.random() * 100}vw`;
-        p.style.animationDuration = `${Math.random() * 35 + 25}s`;
-        p.style.animationDelay = `${Math.random() * 15}s`;
-        particlesContainer.appendChild(p);
-    }
-</script>  
+        setInterval(() => fetchWithProxy(), 60000);
+
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 25; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 5 + 2;
+            p.style.width = `${size}px`;
+            p.style.height = `${size}px`;
+            p.style.left = `${Math.random() * 100}vw`;
+            p.style.animationDuration = `${Math.random() * 35 + 25}s`;
+            p.style.animationDelay = `${Math.random() * 15}s`;
+            particlesContainer.appendChild(p);
+        }
+    </script>       
 </body>
 </html>
