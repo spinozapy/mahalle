@@ -629,6 +629,14 @@
                 document.body.style.overflow = 'auto';
             });
         });
+        
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        document.addEventListener('mouseup', () => {
+            window.getSelection().removeAllRanges();
+        });
+        document.addEventListener('touchstart', e => {
+        }, { passive: false });
 
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
